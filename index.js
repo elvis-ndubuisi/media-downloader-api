@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const httpErrors = require("http-errors");
 const ytMusic = require("./handlers/dl-ytmusic");
 const ytVideo = require("./handlers/dl-ytvideo");
+const infoMedia = require("./handlers/info-ytmedia");
 
 const app = express();
 
@@ -12,7 +13,8 @@ app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.post("/", ytVideo);
+app.get("/", ytVideo);
+app.post("/info", infoMedia);
 app.post("/mp3", ytMusic);
 
 app.get("*", (req, res, next) => {
