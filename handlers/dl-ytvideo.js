@@ -1,44 +1,45 @@
-const fs = require("fs");
+/**
+ * Stream Yt video data in chunks through API route.
+ */
+
+const https = require("node:https");
+const httpErrors = require("http-errors");
 const ytdl = require("ytdl-core");
-const http = require("http");
 
-const ytVideo = async (req, res, next) => {
-  // Get youtube video info
-  let url = "https://www.youtube.com/watch?v=a00NRSFgHsY";
-  const info = await ytdl.getInfo(url);
+const dlYtVideo = async (req, res, next) => {
+  const durl = req.body.durl;
+  if (!durl) throw httpErrors.BadRequest("Invalid data");
 
-  // Begin download process.
-  // http.get(decodeURIComponent(info.formats[1].url), function (response) {
-  //   res.setHeader("Content-Length", response.headers["content-length"]);
-  //   if (response.statusCode >= 400) res.status(500).send("Error");
-  //   response.on("data", function (chunk) {
-  //     res.write(chunk);
-  //   });
-  //   response.on("end"),
-  //     function () {
-  //       res.send("completed");
-  //       res.end();
-  //     };
-  // });
+  // Begin stream process.
+  try {
+    https.get(decodeURIComponent(durl), (response) => {
+      // Set Headers
+      res.setHeader("Content-Length", response.headers["content-length"]);
+      res.setHeader("Content-Disposition", "attachment; filename=video.mp4");
+      res.setHeader("Content-Type", "video/mp4");
 
-  http.get(
-    decodeURIComponent(info.formats[0].url, (resp) => {
-      console.log(resp);
-    })
-  );
+      // Check status code
+      if (response.statusCode >= 400)
+        res
+          .status(500)
+          .json({ name: "Error", message: "Internal Server Error" });
+
+      // Initiate streaming process.
+      response.on("data", (chunk) => {
+        res.write(chunk);
+      });
+
+      response.on("error", (error) => {
+        res.status(500).json({ name: error.name, message: error.message });
+      });
+
+      response.on("end", () => {
+        res.end();
+      });
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
-module.exports = ytVideo;
-
-// app.get("/download-video", function (req, res) {
-//   http.get(decodeURIComponent(req.query.url), function (response) {
-//     res.setHeader("Content-Length", response.headers["content-length"]);
-//     if (response.statusCode >= 400) res.status(500).send("Error");
-//     response.on("data", function (chunk) {
-//       res.write(chunk);
-//     });
-//     response.on("end", function () {
-//       res.end();
-//     });
-//   });
-// });
+module.exports = dlYtVideo;

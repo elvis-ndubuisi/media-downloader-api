@@ -2,21 +2,14 @@ const cors = require("cors");
 const express = require("express");
 const helmet = require("helmet");
 const httpErrors = require("http-errors");
-const ytMusic = require("./handlers/dl-ytmusic");
-const ytVideo = require("./handlers/dl-ytvideo");
-const infoMedia = require("./handlers/info-ytmedia");
+const routers = require("./routes");
 
 const app = express();
 
 app.use(helmet());
 app.use(cors());
-app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
-app.get("/", ytVideo);
-app.post("/info", infoMedia);
-app.post("/mp3", ytMusic);
-
+app.use(routers);
 app.get("*", (req, res, next) => {
   next(httpErrors.NotFound("Route doesn't exist"));
 });
