@@ -3,12 +3,13 @@ const _ = require("lodash");
 const httpErrors = require("http-errors");
 
 /**
- * Fetches all video data related to video url passed in request body
- * @param {object} request.body.url youtube url link
+ * Gets required data from ytdl-core.
+ * @param req sVideo url from request body --  url string
+ * @param res Required video info stripped out from the ytdl-core result.
  */
 async function youtubeVideoHandler(req, res) {
-  /* No url value passed in request? */
-  if (!req.body.url) httpErrors.BadRequest("Provide a valid youtube link");
+  if (!req.body.url || ytdl.validateURL(req.body.url) === false)
+    res.send("Provide a valid link");
 
   try {
     const metaInfo = _.pick(
@@ -16,6 +17,10 @@ async function youtubeVideoHandler(req, res) {
       "formats",
       "videoDetails"
     );
+
+    res.set("Content-Disposition", "attachment");
+    res.set("Content-Type", "video/mp4");
+    res.set("Content-Length", metaInfo.videoDetails.lengthSeconds);
 
     const videos = ytdl.filterFormats(metaInfo.formats, "videoandaudio");
     metaInfo.formats = videos.map((format) =>
