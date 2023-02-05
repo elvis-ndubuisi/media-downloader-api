@@ -18,10 +18,6 @@ async function youtubeVideoHandler(req, res) {
       "videoDetails"
     );
 
-    res.set("Content-Disposition", "attachment");
-    res.set("Content-Type", "video/mp4");
-    res.set("Content-Length", metaInfo.videoDetails.lengthSeconds);
-
     const videos = ytdl.filterFormats(metaInfo.formats, "videoandaudio");
     metaInfo.formats = videos.map((format) =>
       _.pick(format, "mimeType", "qualityLabel", "quality", "url", "container")
