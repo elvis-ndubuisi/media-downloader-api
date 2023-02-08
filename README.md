@@ -17,13 +17,14 @@ git clone https://github.com/elvis-ndubuisi/media-downloader-api.git <custonName
 
 ```bash
 cd media-downloader-api
-``
+```
 
 - Install packages
 
 ```bash
 npm install
 ```
+
 - Start dev or main server
 
 ```base
@@ -43,9 +44,9 @@ which are passed to an anchor tag (looks something like this).
 <a href=`${url-from-api} download=`${title-from-api}`>Download Video</a>
 ```
 - Clicking on the link opens a tab or still the same tab, and starts streaming the video without downloading it straigh away
-- Downloading the video from the options provided on the display control down, download video but sets video file name to 'videoplayback.mp4'
+- Downloading the video from the options provided on the display control, downloads the video but sets video file name to 'videoplayback.mp4'
 
-**This issue can be traced to `same-origin` cors issue (since <a download></a> required cors be set to same-origin to init download immediately). Video title MAY BE due to `same-origin`, `Content-disposition` and `Content-Type` headers received by the frontend when it made requres to youtube video url.
+**This issue can be traced to `same-origin` cors issue (since <a download></a> required cors be set to same-origin to init download immediately). Video title MAY BE due to `same-origin`, `Content-disposition` and `Content-Type` headers received by the frontend when it made request to youtube video url.
 
 ## Possible fix
 
